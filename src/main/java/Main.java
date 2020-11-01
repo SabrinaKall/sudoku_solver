@@ -3,15 +3,14 @@ import exception.ValueNotAllowedException;
 import model.Grid;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Main {
 
-    private static final String instructions = "Available commands: NEW GRID / EXAMPLE GRID / SOLVE / STOP / SHOW / POTENTIAL VALUES";
-
     private static Grid grid;
     private static boolean gridSet = false;
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[]args) {
 
@@ -19,7 +18,7 @@ public class Main {
         Scanner scanner = new Scanner(stream);
         boolean keepRunning = true;
         System.out.println("Welcome to the java sudoku solver");
-        System.out.println(instructions);
+        System.out.println(prettyPrintInstructions());
         while(keepRunning) {
             System.out.print("Next action: ");
             String input = scanner.nextLine();
@@ -31,7 +30,7 @@ public class Main {
                         gridSet = true;
                     } catch (DuplicateException | ValueNotAllowedException e) {
                         System.out.println("Could not solve grid");
-                        System.out.println(e.getMessage());
+                        logger.warning(e.getMessage());
                     }
                     break;
                 case "EXAMPLE GRID":
@@ -42,7 +41,7 @@ public class Main {
                         gridSet = true;
                     } catch (Exception | ValueNotAllowedException e) {
                         System.out.println("Could not set example grid");
-                        System.out.println(e.getMessage());
+                        logger.warning(e.getMessage());
                     }
                     break;
                 case "STOP":
@@ -77,7 +76,7 @@ public class Main {
                     break;
                 default:
                     System.out.println("Unknown command: " + input);
-                    System.out.println(instructions);
+                    System.out.println(prettyPrintInstructions());
                     break;
             }
         }
@@ -91,9 +90,20 @@ public class Main {
             System.out.println("Sudoku solved: " + solved);
             grid.print();
         } catch (ValueNotAllowedException e) {
-            System.out.println("Could not solve grid");
+            logger.warning("Could not solve grid");
             System.out.println(e.getMessage());
             grid.print();
         }
+    }
+
+    private static String prettyPrintInstructions() {
+        int emptySpaceSize = 10;
+        String emptySpace = " ".repeat(emptySpaceSize);
+        StringBuilder output = new StringBuilder("Available commands: \n");
+        for(Command command: Command.values()) {
+            String emptySpaceForCommand = emptySpace.substring(0, emptySpaceSize - command.name().length());
+            output.append(" * ").append(command.name()).append(":").append(emptySpaceForCommand).append(command.getInstructions()).append("\n");
+        }
+        return output.toString();
     }
 }
