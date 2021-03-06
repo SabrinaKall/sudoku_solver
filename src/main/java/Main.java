@@ -12,18 +12,18 @@ public class Main {
     private static boolean gridSet = false;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
-    public static void main(String[]args) {
+    public static void main(String[] args) {
 
         InputStream stream = System.in;
         Scanner scanner = new Scanner(stream);
         boolean keepRunning = true;
         System.out.println("Welcome to the java sudoku solver");
         System.out.println(prettyPrintInstructions());
-        while(keepRunning) {
+        while (keepRunning) {
             System.out.print("Next action: ");
-            String input = scanner.nextLine();
+            Command input = Command.valueOf(scanner.nextLine().toUpperCase());
             switch (input) {
-                case "NEW GRID":
+                case NEW:
                     SudokuInput sudokuInput = SudokuInput.getInstance();
                     try {
                         grid = sudokuInput.readSudokuLineByLine();
@@ -33,7 +33,7 @@ public class Main {
                         logger.warning(e.getMessage());
                     }
                     break;
-                case "EXAMPLE GRID":
+                case EXAMPLE:
                     System.out.print("Difficulty level: [easy|medium|hard]:");
                     String difficultyLevel = scanner.nextLine();
                     try {
@@ -44,26 +44,26 @@ public class Main {
                         logger.warning(e.getMessage());
                     }
                     break;
-                case "STOP":
+                case STOP:
                     keepRunning = false;
                     System.out.print("Good-bye");
                     break;
-                case "SOLVE":
-                    if(!gridSet) {
+                case SOLVE:
+                    if (!gridSet) {
                         System.out.println("Set grid first");
                         break;
                     }
                     solveGrid(grid);
                     break;
-                case "SHOW":
-                    if(!gridSet) {
+                case SHOW:
+                    if (!gridSet) {
                         System.out.println("Set grid first");
                         break;
                     }
                     grid.print();
                     break;
-                case "POTENTIAL":
-                    if(!gridSet) {
+                case POTENTIAL:
+                    if (!gridSet) {
                         System.out.println("Set grid first");
                         break;
                     }
@@ -100,7 +100,7 @@ public class Main {
         int emptySpaceSize = 10;
         String emptySpace = " ".repeat(emptySpaceSize);
         StringBuilder output = new StringBuilder("Available commands: \n");
-        for(Command command: Command.values()) {
+        for (Command command : Command.values()) {
             String emptySpaceForCommand = emptySpace.substring(0, emptySpaceSize - command.name().length());
             output.append(" * ").append(command.name()).append(":").append(emptySpaceForCommand).append(command.getInstructions()).append("\n");
         }
